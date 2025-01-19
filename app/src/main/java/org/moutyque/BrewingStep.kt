@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,18 +29,17 @@ import androidx.compose.ui.unit.dp
 data class BrewingStepData(
     val stepNumber: Int,
     val stepText: String,
+    val isExpanded: MutableState<Boolean>,
     val commentText: String
 )
-
+//TODO add action on stepData.isExpanded.value change
 @Composable
 fun BrewingStep(
     stepData: BrewingStepData,
-    isExpanded: Boolean,
     onExpand: () -> Unit,
     onCollapse: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isExpandedState by remember { mutableStateOf(isExpanded) }
     val customFontFamily = FontFamily.Serif
 
     Column(modifier = modifier.animateContentSize(tween(durationMillis = 300))) {
@@ -50,23 +50,23 @@ fun BrewingStep(
                     fontFamily = customFontFamily,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.weight(1f) // Add weight to the text
             )
             IconButton(onClick = {
-                isExpandedState = !isExpandedState
-                if (isExpandedState) {
+                stepData.isExpanded.value = !stepData.isExpanded.value
+                if (stepData.isExpanded.value) {
                     onExpand()
                 } else {
                     onCollapse()
                 }
             }) {
                 Icon(
-                    imageVector = if (isExpandedState) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    imageVector = if (stepData.isExpanded.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                     contentDescription = "Expand/Collapse"
                 )
             }
         }
-        AnimatedVisibility(visible = isExpandedState) {
+        AnimatedVisibility(visible = stepData.isExpanded.value) {
             Column {
                 Text(
                     text = stepData.stepText,

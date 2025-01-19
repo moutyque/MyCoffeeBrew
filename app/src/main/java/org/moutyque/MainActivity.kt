@@ -4,32 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,10 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
+import java.util.stream.IntStream.range
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,30 +45,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Define a data class to hold the state of each step
-data class StepState(
-    val stepNumber: Int,
-    var isExpanded: Boolean = false,
-    var isChecked: Boolean = false
-)
 
 @Composable
 fun BrewingGuide(modifier: Modifier = Modifier) {
-    val steps = remember { mutableStateOf(listOf<StepState>()) }
-    var currentStep by remember { mutableIntStateOf(1) }
-    var expandedStepIndex by remember { mutableIntStateOf(-1) }
-
+    val steps = remember { mutableStateOf(listOf<BrewingStepData>()) }
     // Initialize the steps
     if (steps.value.isEmpty()) {
-        steps.value = listOf(
-            StepState(1, true, false),
-            StepState(2, false, false),
-            StepState(3, false, false),
-            StepState(4, false, false),
-            StepState(5, false, false),
-            StepState(6, false, false),
-            StepState(7, false, false)
-        )
+        steps.value = (1..7).map {
+            getBrewingStepData(it)
+        }
     }
 
     Column(
@@ -92,41 +66,18 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
             steps.value.forEachIndexed { index, stepState ->
                 BrewingStep(
-                    stepData = getBrewingStepData(stepState.stepNumber),
-                    isExpanded = stepState.isExpanded,
+                    stepData =  stepState,
                     onExpand = {
-                        // Collapse all other steps
-                        val updatedSteps = steps.value.map {
-                            if (it.stepNumber != stepState.stepNumber) {
-                                it.copy(isExpanded = false)
-                            } else {
-                                it
-                            }
-                        }.toMutableList()
-                        // Expand the current step
-                        updatedSteps[index] = stepState.copy(isExpanded = true)
-                        steps.value = updatedSteps.toList()
-                        expandedStepIndex = index
+                        steps.value.forEach { it.isExpanded.value = false }
+                        stepState.isExpanded.value = true
                     },
                     onCollapse = {
-                        // Collapse the current step
-                        val updatedSteps = steps.value.map {
-                            if (it.stepNumber != stepState.stepNumber) {
-                                it.copy(isExpanded = false)
-                            } else {
-                                it
-                            }
-                        }.toMutableList()
+                        steps.value.forEach { it.isExpanded.value = false }
                         // Expand the next step
                         val nextStepIndex = (index + 1) % 7
                         if (nextStepIndex != -1) {
-                            val nextStep = steps.value.toMutableList()
-                            nextStep[nextStepIndex] = steps.value[nextStepIndex].copy(
-                                isExpanded = true
-                            )
-                            steps.value = nextStep.toList()
+                            steps.value[nextStepIndex].isExpanded.value = true
                         }
-                        expandedStepIndex = -1
                     },
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
@@ -219,7 +170,12 @@ fun getBrewingStepData(stepNumber: Int): BrewingStepData {
         7 -> stringResource(id = R.string.v60_step_7_comment)
         else -> ""
     }
-    return BrewingStepData(stepNumber = stepNumber, stepText = stepText, commentText = commentText)
+    return BrewingStepData(
+        stepNumber = stepNumber,
+        stepText = stepText,
+        isExpanded = remember { mutableStateOf(false) },
+        commentText = commentText
+    )
 
 
 }
