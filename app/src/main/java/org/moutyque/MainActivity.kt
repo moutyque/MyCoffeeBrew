@@ -156,9 +156,9 @@ fun TabScreen(modifier: Modifier = Modifier) {
             }
         }
         when (tabIndex) {
-            0 -> tabContent[0](Modifier)
-            1 -> tabContent[1](Modifier)
-            2 -> tabContent[2](Modifier)
+            0 -> tabContent[0](modifier)
+            1 -> tabContent[1](modifier)
+            2 -> tabContent[2](modifier)
         }
     }
 }
