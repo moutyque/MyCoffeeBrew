@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
 
@@ -74,20 +76,28 @@ fun BrewingStep(stepNumber: Int) {
         else -> ""
     }
 
+    val customFontFamily = FontFamily.Serif
+
+
     Column {
         Text(
             text = stringResource(id = R.string.step_title, stepNumber),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontFamily = customFontFamily,
+                fontWeight = FontWeight.Bold
+            ),
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = stepText,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontFamily = customFontFamily,
+            ),
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = commentText,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(fontFamily = customFontFamily),
             modifier = Modifier.padding(bottom = 4.dp)
         )
     }
