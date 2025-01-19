@@ -6,9 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -44,14 +47,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BrewingGuide(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(16.dp)) {
-        GoodsHeader()
-        for (step in 1..7) {
-            BrewingStep(step)
-            if (step < 7) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.surfaceVariant) // Light gray background
+            .verticalScroll(rememberScrollState()) // Add verticalScroll here
+    ) {
+        GoodsHeader(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) // White background for header
+        Column(modifier = Modifier.fillMaxWidth()) {
+            for (step in 1..7) {
+                BrewingStep(step)
+                if (step < 7) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
             }
         }
+        Spacer(modifier = Modifier.padding(bottom = 16.dp))
+
     }
 }
 
