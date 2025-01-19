@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">MyCofeeBrew</string>
+    <string name="v60_step_1_action">Put the V60 on top of the mug/server, place the filter and rinse it.</string>
+    <string name="v60_step_1_comment">Rinsing with hot water saturates the filter and gets rid of the papery taste. Don’t forget to discard it thoughtfully before brewing.</string>
+    <string name="v60_step_2_action">Grind 15g of coffee and place inside the brewer.</string>
+    <string name="v60_step_2_comment">Gently shake to settle the grounds into a flat bed.</string>
+    <string name="v60_step_3_action">Move everything on top of the scales, tare, and gently pour in 50g of water just off the boil.</string>
+    <string name="v60_step_3_comment">It helps to pour the water in a circular pattern from the outside of the filter towards the centre.</string>
+    <string name="v60_step_4_action">Swirl or stir to make sure all the grounds are wet, start the timer and wait 45 seconds.</string>
+    <string name="v60_step_4_comment">This initial wait is called the bloom and gives time for the gasses trapped in the coffee to escape.</string>
+    <string name="v60_step_5_action">Gently pour in more water until you’ve added a total of 250g. Pour using a circular motion.</string>
+    <string name="v60_step_5_comment">Pour each new batch of water in gently, trying not to disturb the coffee grounds too much. Aim for a total brew time of 3.5 minutes (meaning the last drop should come through the filter at minute 3:30, from the start of the first pour.</string>
+    <string name="v60_step_6_action">Give a good swirl or a gentle stir once the pour is complete.</string>
+    <string name="v60_step_6_comment">Stirring will help ensure all the grounds are evenly extracted.</string>
+    <string name="v60_step_7_action">Swirl your server or mug, serve and enjoy!</string>
+    <string name="v60_step_7_comment">Swirling helps mix and aerate the brew.</string>
+    <string name="step_title">Step %d:</string>
 </resources>

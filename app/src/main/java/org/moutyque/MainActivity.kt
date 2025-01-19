@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -18,7 +20,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,10 +32,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyCofeeBrewTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    BrewingGuide(
                         modifier = Modifier.padding(innerPadding)
                     )
+                    /*Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )*/
                 }
             }
         }
@@ -51,6 +58,62 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     MyCofeeBrewTheme {
         Greeting("Android")
+    }
+}
+
+
+@Composable
+fun BrewingGuide(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        for (step in 1..7) {
+            BrewingStep(step)
+            if (step < 7) {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun BrewingStep(stepNumber: Int) {
+    val stepText = when (stepNumber) {
+        1 -> stringResource(id = R.string.v60_step_1_action)
+        2 -> stringResource(id = R.string.v60_step_2_action)
+        3 -> stringResource(id = R.string.v60_step_3_action)
+        4 -> stringResource(id = R.string.v60_step_4_action)
+        5 -> stringResource(id = R.string.v60_step_5_action)
+        6 -> stringResource(id = R.string.v60_step_6_action)
+        7 -> stringResource(id = R.string.v60_step_7_action)
+        else -> ""
+    }
+
+    val commentText = when (stepNumber) {
+        1 -> stringResource(id = R.string.v60_step_1_comment)
+        2 -> stringResource(id = R.string.v60_step_2_comment)
+        3 -> stringResource(id = R.string.v60_step_3_comment)
+        4 -> stringResource(id = R.string.v60_step_4_comment)
+        5 -> stringResource(id = R.string.v60_step_5_comment)
+        6 -> stringResource(id = R.string.v60_step_6_comment)
+        7 -> stringResource(id = R.string.v60_step_7_comment)
+        else -> ""
+    }
+
+    Column {
+        Text(
+            text = stringResource(id = R.string.step_title, stepNumber),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = stepText,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = commentText,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
     }
 }
 
