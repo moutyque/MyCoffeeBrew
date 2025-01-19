@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
 
@@ -32,9 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyCofeeBrewTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BrewingGuide(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    TabScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -95,23 +92,29 @@ fun BrewingStep(stepNumber: Int) {
         )
     }
 }
-
 @Composable
-fun TabScreen() {
+fun TabScreen(modifier: Modifier = Modifier) {
     var tabIndex by remember { mutableIntStateOf(0) }
-
-    val tabs = listOf("Home", "About", "Settings")
-
+    val tabs = listOf("V60", "About", "Settings")
+    val tabContent =  listOf<@Composable (Modifier) -> Unit>(
+        { BrewingGuide(modifier = Modifier.padding(16.dp)) },
+        { Text(text = "About", modifier = Modifier.padding(16.dp)) },
+        { Text(text = "Settings", modifier = Modifier.padding(16.dp)) }
+    )
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(selectedTabIndex = tabIndex) {
             tabs.forEachIndexed { index, title ->
-                Tab(text = { Text(title) },
+                Tab(
+                    text = { Text(title) },
                     selected = tabIndex == index,
                     onClick = { tabIndex = index }
                 )
             }
         }
         when (tabIndex) {
+            0 -> tabContent[0](Modifier)
+            1 -> tabContent[1](Modifier)
+            2 -> tabContent[2](Modifier)
         }
     }
 }
