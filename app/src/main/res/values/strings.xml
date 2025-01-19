@@ -15,4 +15,8 @@
     <string name="v60_step_7_action">Swirl your server or mug, serve and enjoy!</string>
     <string name="v60_step_7_comment">Swirling helps mix and aerate the brew.</string>
     <string name="step_title">Step %d:</string>
+    <string name="goods_title">Goods</string>
+    <string name="goods_coffee">• 15 g of coffee beans</string>
+    <string name="goods_water">• 250 g (mL) of just-boiled water ♨︎</string>
+    <string name="goods_extra_water">• Extra water to rinse the paper filter</string>
 </resources>

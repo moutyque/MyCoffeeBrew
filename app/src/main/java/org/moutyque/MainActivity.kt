@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BrewingGuide(modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp)) {
+        GoodsHeader()
         for (step in 1..7) {
             BrewingStep(step)
             if (step < 7) {
@@ -51,6 +52,33 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun GoodsHeader(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        Text(
+            text = stringResource(id = R.string.goods_title),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.goods_coffee),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.goods_water),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.goods_extra_water),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+    }
+}
+
 
 @Composable
 fun BrewingStep(stepNumber: Int) {
