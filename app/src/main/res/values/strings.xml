@@ -17,6 +17,7 @@
     <string name="step_title">Step %d:</string>
     <string name="goods_title">Goods</string>
     <string name="goods_coffee">Coffee: %1$d g</string>
+    <string name="goods_grinder">Grinder size 3, quantity 3</string>
     <string name="goods_water">Water: %1$d ml</string>
     <string name="goods_extra_water">• Extra water to rinse the paper filter</string>
 </resources>

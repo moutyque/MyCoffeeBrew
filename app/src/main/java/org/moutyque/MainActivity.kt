@@ -126,6 +126,11 @@ fun GoodsHeader(coffeeQuantity: Int = 15, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
+            text = stringResource(id = R.string.goods_grinder),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
             text = stringResource(id = R.string.goods_coffee, coffeeQuantity),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 4.dp)
