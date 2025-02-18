@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -21,15 +23,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
 import java.util.stream.IntStream.range
+import kotlin.text.toFloatOrNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +54,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BrewingGuide(modifier: Modifier = Modifier) {
     val steps = remember { mutableStateOf(listOf<BrewingStepData>()) }
+    var coffeeQuantity by remember { mutableIntStateOf(15) }
+
     // Initialize the steps
-    if (steps.value.isEmpty()) {
-        steps.value = (1..7).map {
-            getBrewingStepData(it)
-        }
+
+    steps.value = (1..7).map {
+        getBrewingStepData(it,coffeeQuantity)
     }
+
 
     Column(
         modifier = modifier
@@ -62,11 +69,25 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .verticalScroll(rememberScrollState())
     ) {
-        GoodsHeader(modifier = Modifier.background(MaterialTheme.colorScheme.surface))
+        OutlinedTextField(
+            value = coffeeQuantity.toString(),
+            onValueChange = { newValue ->
+                coffeeQuantity = newValue.toIntOrNull() ?: coffeeQuantity
+            },
+            label = { Text("Coffee (g)") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+        GoodsHeader(
+            coffeeQuantity,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        )
         Column(modifier = Modifier.fillMaxWidth()) {
             steps.value.forEachIndexed { index, stepState ->
                 BrewingStep(
-                    stepData =  stepState,
+                    stepData = stepState,
                     onExpand = {
                         steps.value.forEach { it.isExpanded.value = false }
                         stepState.isExpanded.value = true
@@ -91,7 +112,8 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GoodsHeader(modifier: Modifier = Modifier) {
+fun GoodsHeader(coffeeQuantity: Int = 15, modifier: Modifier = Modifier) {
+    val waterQuantity = coffeeQuantity * 16
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -104,12 +126,12 @@ fun GoodsHeader(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            text = stringResource(id = R.string.goods_coffee),
+            text = stringResource(id = R.string.goods_coffee, coffeeQuantity),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = stringResource(id = R.string.goods_water),
+            text = stringResource(id = R.string.goods_water, waterQuantity),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 4.dp)
         )
@@ -149,33 +171,63 @@ fun TabScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun getBrewingStepData(stepNumber: Int): BrewingStepData {
-    val stepText = when (stepNumber) {
-        1 -> stringResource(id = R.string.v60_step_1_action)
-        2 -> stringResource(id = R.string.v60_step_2_action)
-        3 -> stringResource(id = R.string.v60_step_3_action)
-        4 -> stringResource(id = R.string.v60_step_4_action)
-        5 -> stringResource(id = R.string.v60_step_5_action)
-        6 -> stringResource(id = R.string.v60_step_6_action)
-        7 -> stringResource(id = R.string.v60_step_7_action)
-        else -> ""
+fun getBrewingStepData(stepNumber: Int, coffeeQuantity: Int = 15): BrewingStepData =
+     when (stepNumber) {
+        1 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(id = R.string.v60_step_1_action),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_1_comment)
+        )
+
+        2 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(id = R.string.v60_step_2_action, coffeeQuantity),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_2_comment)
+        )
+
+        3 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(
+                id = R.string.v60_step_3_action,
+                coffeeQuantity * 50 / 15
+            ),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_3_comment)
+        )
+
+        4 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(id = R.string.v60_step_4_action, coffeeQuantity),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_4_comment)
+        )
+
+        5 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(
+                id = R.string.v60_step_5_action,
+                coffeeQuantity * 250 / 15
+            ),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_5_comment)
+        )
+
+        6 ->BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(id = R.string.v60_step_6_action, coffeeQuantity),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_6_comment)
+        )
+        7 -> BrewingStepData(
+            stepNumber = stepNumber,
+            stepText = stringResource(id = R.string.v60_step_7_action, coffeeQuantity),
+            isExpanded = remember { mutableStateOf(false) },
+            commentText = stringResource(id = R.string.v60_step_7_comment)
+        )
+        else -> throw IllegalStateException("Invalid step number")
     }
-    val commentText = when (stepNumber) {
-        1 -> stringResource(id = R.string.v60_step_1_comment)
-        2 -> stringResource(id = R.string.v60_step_2_comment)
-        3 -> stringResource(id = R.string.v60_step_3_comment)
-        4 -> stringResource(id = R.string.v60_step_4_comment)
-        5 -> stringResource(id = R.string.v60_step_5_comment)
-        6 -> stringResource(id = R.string.v60_step_6_comment)
-        7 -> stringResource(id = R.string.v60_step_7_comment)
-        else -> ""
-    }
-    return BrewingStepData(
-        stepNumber = stepNumber,
-        stepText = stepText,
-        isExpanded = remember { mutableStateOf(false) },
-        commentText = commentText
-    )
 
 
-}
+
