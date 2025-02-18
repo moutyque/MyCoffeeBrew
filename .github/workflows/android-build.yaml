@@ -2,9 +2,9 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ] # Change to your main branch name if different
+    branches: [ "master" ] # Change to your main branch name if different
   pull_request:
-    branches: [ "main" ] # Change to your main branch name if different
+    branches: [ "master" ] # Change to your main branch name if different
 
 jobs:
   build:
