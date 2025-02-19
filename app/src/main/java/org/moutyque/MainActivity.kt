@@ -192,6 +192,11 @@ fun GoodsHeader(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
+            text = stringResource(id = R.string.goods_grinder),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
             text = stringResource(id = R.string.goods_extra_water, extraWaterQuantity),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 4.dp)
