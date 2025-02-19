@@ -1,40 +1,42 @@
 package org.moutyque
 
+import Minus
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.moutyque.ui.theme.MyCofeeBrewTheme
-import java.util.stream.IntStream.range
-import kotlin.text.toFloatOrNull
+import androidx.compose.material.icons.filled.Add
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,9 +61,8 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
     // Initialize the steps
 
     steps.value = (1..7).map {
-        getBrewingStepData(it,coffeeQuantity)
+        getBrewingStepData(it, coffeeQuantity)
     }
-
 
     Column(
         modifier = modifier
@@ -69,19 +70,11 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedTextField(
-            value = coffeeQuantity.toString(),
-            onValueChange = { newValue ->
-                coffeeQuantity = newValue.toIntOrNull() ?: coffeeQuantity
-            },
-            label = { Text("Coffee (g)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        )
         GoodsHeader(
-            coffeeQuantity,
+            coffeeQuantity = coffeeQuantity,
+            onCoffeeQuantityChanged = { newQuantity ->
+                coffeeQuantity = newQuantity
+            },
             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         )
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -112,8 +105,61 @@ fun BrewingGuide(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GoodsHeader(coffeeQuantity: Int = 15, modifier: Modifier = Modifier) {
+fun QuantitySelector(
+    quantity: Int,
+    onQuantityChanged: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    minQuantity: Int = 1,
+    maxQuantity: Int = 100
+) {
+    var currentQuantity by remember { mutableIntStateOf(quantity) }
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        IconButton(
+            onClick = {
+                if (currentQuantity > minQuantity) {
+                    currentQuantity--
+                    onQuantityChanged(currentQuantity)
+                }
+            },
+            enabled = currentQuantity > minQuantity
+        ) {
+            Icon(Minus, contentDescription = "Decrease quantity")
+        }
+
+        Text(
+            text = currentQuantity.toString(),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.width(32.dp),
+        )
+
+        IconButton(
+            onClick = {
+                if (currentQuantity < maxQuantity) {
+                    currentQuantity++
+                    onQuantityChanged(currentQuantity)
+                }
+            },
+            enabled = currentQuantity < maxQuantity
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = "Increase quantity")
+        }
+    }
+}
+
+@Composable
+fun GoodsHeader(
+    coffeeQuantity: Int,
+    onCoffeeQuantityChanged: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val waterQuantity = coffeeQuantity * 16
+    val extraWaterQuantity = coffeeQuantity * 2
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -125,11 +171,16 @@ fun GoodsHeader(coffeeQuantity: Int = 15, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Text(
-            text = stringResource(id = R.string.goods_grinder),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 4.dp)
+
+        // Use QuantitySelector instead of the dropdown
+        QuantitySelector(
+            quantity = coffeeQuantity,
+            onQuantityChanged = onCoffeeQuantityChanged,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         )
+
         Text(
             text = stringResource(id = R.string.goods_coffee, coffeeQuantity),
             style = MaterialTheme.typography.bodyLarge,
@@ -141,7 +192,7 @@ fun GoodsHeader(coffeeQuantity: Int = 15, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = stringResource(id = R.string.goods_extra_water),
+            text = stringResource(id = R.string.goods_extra_water, extraWaterQuantity),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 4.dp)
         )
@@ -177,7 +228,7 @@ fun TabScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun getBrewingStepData(stepNumber: Int, coffeeQuantity: Int = 15): BrewingStepData =
-     when (stepNumber) {
+    when (stepNumber) {
         1 -> BrewingStepData(
             stepNumber = stepNumber,
             stepText = stringResource(id = R.string.v60_step_1_action),
@@ -219,18 +270,20 @@ fun getBrewingStepData(stepNumber: Int, coffeeQuantity: Int = 15): BrewingStepDa
             commentText = stringResource(id = R.string.v60_step_5_comment)
         )
 
-        6 ->BrewingStepData(
+        6 -> BrewingStepData(
             stepNumber = stepNumber,
             stepText = stringResource(id = R.string.v60_step_6_action, coffeeQuantity),
             isExpanded = remember { mutableStateOf(false) },
             commentText = stringResource(id = R.string.v60_step_6_comment)
         )
+
         7 -> BrewingStepData(
             stepNumber = stepNumber,
             stepText = stringResource(id = R.string.v60_step_7_action, coffeeQuantity),
             isExpanded = remember { mutableStateOf(false) },
             commentText = stringResource(id = R.string.v60_step_7_comment)
         )
+
         else -> throw IllegalStateException("Invalid step number")
     }
 
